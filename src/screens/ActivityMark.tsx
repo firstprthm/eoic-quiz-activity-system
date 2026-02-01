@@ -7,11 +7,6 @@ type Participant = {
   team_id: number
 }
 
-type OutLog = {
-  participant_id: number
-  created_at: string
-}
-
 type Props = {
   eventId: string
 }

@@ -9,6 +9,11 @@ import QuizQuestionScreen from './screens/QuizQuestionScreen'
 import ActivityRules from './screens/ActivityRules'
 import ActivityMaster from './screens/ActivityMaster'
 import ActivityMark from './screens/ActivityMark'
+import ResultsScreen from './screens/ResultsScreen'
+import TieBreakerRules from './screens/TieBreakerRules'
+import TieBreakerRepresentativeSelect from './screens/TieBreakerRepresentativeSelect'
+import TieBreakerChallenge from './screens/TieBreakerChallenge'
+import CompleteScreen from './screens/CompleteScreen'
 
 type Screen = 
   | 'attendance' 
@@ -18,6 +23,11 @@ type Screen =
   | 'quiz'
   | 'activity_rules'
   | 'activity_master'
+  | 'results'
+  | 'tie_breaker_rules'
+  | 'tie_breaker_representative'
+  | 'tie_breaker_challenge'
+  | 'complete'
 
 type QuizQuestion = {
   id: string
@@ -36,7 +46,12 @@ function ProjectorFlow() {
   const currentEventId = '4c50ac46-4f56-4ba5-8ef4-71875887f547'
   const [currentTeamId, setCurrentTeamId] = useState<number | null>(null)
   const [currentParticipantId, setCurrentParticipantId] = useState<number | null>(null)
+  const [tiedTeams, setTiedTeams] = useState<number[]>([])
+  const [tieBreakerReps, setTieBreakerReps] = useState<
+    { teamId: number; participantId: number }[]
+  >([])
 
+  const [tieBreakerIndex, setTieBreakerIndex] = useState(0)
 
   async function getEligibleTeams(): Promise<number[]> {
     const { data, error } = await supabase
@@ -298,12 +313,71 @@ function ProjectorFlow() {
       <ActivityMaster
         eventId={currentEventId}
         onNext={() => {
-          alert('Activity completed. Calculate results now.')
+          setScreen('results')
         }}
       />
     )
   }
 
+  if (screen === 'results') {
+    return (
+      <ResultsScreen
+        eventId={currentEventId}
+        onComplete={() => setScreen('complete')}
+        onTieBreaker={(teams) => {
+          setTiedTeams(teams)
+          setScreen('tie_breaker_rules')
+        }}
+      />
+    )
+  }
+
+  if (screen === 'tie_breaker_rules') {
+    return (
+      <TieBreakerRules
+        onNext={() => setScreen('tie_breaker_representative')}
+      />
+    )
+  }
+
+  if (screen === 'tie_breaker_representative') {
+    const currentTeamId = tiedTeams[tieBreakerIndex]
+
+    return (
+      <TieBreakerRepresentativeSelect
+        eventId={currentEventId}
+        teamId={currentTeamId}
+        onConfirm={(participantId) => {
+          setTieBreakerReps(prev => [
+            ...prev,
+            { teamId: currentTeamId, participantId }
+          ])
+
+          if (tieBreakerIndex + 1 < tiedTeams.length) {
+            setTieBreakerIndex(i => i + 1)
+          } else {
+            const ok = window.confirm('Are representatives ready?')
+            if (ok) setScreen('tie_breaker_challenge')
+          }
+        }}
+      />
+    )
+  }
+
+  if (screen === 'tie_breaker_challenge') {
+    return (
+      <TieBreakerChallenge
+        eventId={currentEventId}
+        tiedTeams={tiedTeams}
+        tieBreakerReps={tieBreakerReps}
+        onComplete={() => setScreen('complete')}
+      />
+    )
+  }
+
+  if (screen === 'complete') {
+    return <CompleteScreen />
+  }
 
   return (
     <div
