@@ -9,6 +9,7 @@ type Rep = {
 type ResultRow = {
   team_id: number
   total_points: number
+  rank: number
 }
 
 type Props = {
@@ -73,7 +74,8 @@ export default function TieBreakerChallenge({
     // Fetch updated results
     const { data } = await supabase
       .from('event_results')
-      .select('team_id, total_points')
+      .select('team_id, total_points, rank')
+      .order('rank', { ascending: true })
       .eq('event_id', eventId)
 
     if (!data) return
@@ -108,44 +110,129 @@ export default function TieBreakerChallenge({
       .update({ is_final: true })
       .eq('event_id', eventId)
 
-    setFinalResults(sorted)
+    async function loadFinalResults() {
+      const { data, error } = await supabase
+        .from('event_results')
+        .select('team_id, total_points, rank')
+        .eq('event_id', eventId)
+        .order('rank', { ascending: true })
+
+      if (error || !data) {
+        console.error('Failed to load final results', error)
+        return
+      }
+
+      setFinalResults(data)
+    }
+
+    await loadFinalResults()
   }
 
-  /* ---------------- UI ---------------- */
+  /* ---------------- FINAL RESULTS UI ---------------- */
   if (finalResults) {
+    const groupedByRank = Object.values(
+      finalResults.reduce<Record<number, ResultRow[]>>((acc, row) => {
+        if (!acc[row.rank]) acc[row.rank] = []
+        acc[row.rank].push(row)
+        return acc
+      }, {})
+    ).sort((a, b) => a[0].rank - b[0].rank)
+
+    function getRankStyle(rank: number) {
+      if (rank === 1) return '#ffd700' // gold
+      if (rank === 2) return '#c0c0c0' // silver
+      if (rank === 3) return '#cd7f32' // bronze
+      return '#ffffff'
+    }
+
     return (
       <div style={center}>
-        <h1 style={{ marginBottom: 24 }}>Final Results</h1>
+        <h1 style={{ marginBottom: 32 }}>Final Results</h1>
 
-        {finalResults.map(row => (
-          <div
-            key={row.team_id}
-            style={{
-              padding: '16px 24px',
-              marginBottom: 12,
-              borderRadius: 12,
-              border: '3px solid #000',
-              backgroundColor:
-                row.team_id === finalResults[0].team_id ? '#ffd700' : '#ffffff',
-              fontSize: 20,
-              fontWeight: 700,
-              minWidth: 300,
-              textAlign: 'center'
-            }}
-          >
-            Team {row.team_id} — {row.total_points} pts
+        <div style={{ width: 600 }}>
+          {groupedByRank.map(group => {
+            const rank = group[0].rank
+
+            return (
+              /* ONE ROW PER RANK (vertical stacking) */
+              <div
+                key={rank}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 20,
+                  marginBottom: 28,
+                  transform: `translateY(${(rank - 1) * -12}px)`
+                }}
+              >
+                {/* SIDE-BY-SIDE ONLY FOR TIES */}
+                {group.map(team => (
+                  <div
+                    key={team.team_id}
+                    style={{
+                      padding: '22px 30px',
+                      border: '3px solid #000',
+                      borderRadius: 16,
+                      boxShadow: '0 6px 18px rgba(0,0,0,0.15)',
+                      minWidth: 240,
+                      textAlign: 'center',
+                      backgroundColor: getRankStyle(rank)
+                    }}
+                  >
+                    {/* RANK */}
+                    <div
+                      style={{
+                        fontSize: 16,
+                        opacity: 0.85,
+                        marginBottom: 6
+                      }}
+                    >
+                      RANK {rank}
+                    </div>
+
+                    {/* TEAM */}
+                    <div
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 700
+                      }}
+                    >
+                      TEAM {team.team_id}
+                    </div>
+
+                    {/* POINTS */}
+                    <div
+                      style={{
+                        marginTop: 6,
+                        fontSize: 16
+                      }}
+                    >
+                      {team.total_points} pts
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+
+          <div style={{ textAlign: 'center', marginTop: 40 }}>
+            <button
+              style={{
+                fontSize: 20,
+                padding: '14px 28px',
+                border: '3px solid #000',
+                cursor: 'pointer'
+              }}
+              onClick={onComplete}
+            >
+              Complete
+            </button>
           </div>
-        ))}
-
-        <button
-          style={{ marginTop: 32, fontSize: 18, padding: '12px 24px' }}
-          onClick={onComplete}
-        >
-          Complete
-        </button>
+        </div>
       </div>
     )
   }
+
 
   return (
     <div style={center}>
