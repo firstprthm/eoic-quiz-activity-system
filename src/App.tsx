@@ -9,6 +9,7 @@ import QuizQuestionScreen from './screens/QuizQuestionScreen'
 import ActivityRules from './screens/ActivityRules'
 import ActivityMaster from './screens/ActivityMaster'
 import ActivityMark from './screens/ActivityMark'
+import LiveScore from './screens/LiveScore'
 import ResultsScreen from './screens/ResultsScreen'
 import TieBreakerRules from './screens/TieBreakerRules'
 import TieBreakerRepresentativeSelect from './screens/TieBreakerRepresentativeSelect'
@@ -406,6 +407,12 @@ export default function App()  {
       <Route
         path="/markpage"
         element={<ActivityMark eventId={currentEventId} />}
+      />
+
+      {/* Phone-only live scores page */}
+      <Route
+        path="/livescore"
+        element={<LiveScore eventId={currentEventId} />}
       />
     </Routes>
   )
