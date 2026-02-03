@@ -29,10 +29,9 @@ export default function QuizRules({ onNext }: Props) {
           <li>Before the question is revealed, the team must choose <b>one member</b> to answer the question.</li>
           <li>No discussion after the representative is chosen, only the chosen member may answer.</li>
           <li>A participant can answer only once in the entire quiz.</li>
-          <li>Questions are chosen randomly with no repetition.</li>
           <li>
             After the question is read aloud, options will be revealed and
-            a <b>15-second timer</b> will start.
+            a <b>20-second timer</b> will start.
           </li>
           <li>
             If no answer is locked within time, the question is skipped and

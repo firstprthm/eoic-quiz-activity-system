@@ -21,11 +21,15 @@ export default function CompleteScreen() {
           <h1 style={title}>Outcome</h1>
 
           <ul style={list}>
-            <li>The activity mirrored the practice of inner discipline found in Indian spiritual traditions.</li>
-            <li>Silence became a teacher, revealing the mind’s natural restlessness.</li>
-            <li>Attention, once broken, showed how easily awareness is lost in daily life.</li>
-            <li>Steady practice proved more powerful than brief moments of effort.</li>
-            <li>Individual self-control directly influenced the balance and outcome of the whole group.</li>
+            <li>We didn’t begin by teaching concepts; we began by placing you inside a story and a shared context.</li>
+            <li>In that sense, we followed the Gurukul way, where learning starts with observation, not explanation.</li>
+            <li>When the activity began, the theory left the slides and became something you had to live through.</li>
+            <li>You experienced the difference between reacting impulsively and acting with awareness and self-control.</li>
+            <li>Each individual choice quietly influenced the team, showing how personal discipline builds collective strength.</li>
+            <li>Reflection wasn’t instructed, it emerged on its own, through silence, waiting, and restraint.</li>
+            <li>This is how spirituality was practiced in ancient India; not as theory or belief, but as daily training of awareness within real life.</li>
+            <li>As software engineers, we will have to work under constant pressure, deadlines, bugs, noise, and interruptions, this trains us to respond with clarity instead of reacting emotionally.</li>
+            <li>Practicing these daily builds focus, patience, and decision quality, turning self-control into a professional skill, not just a personal trait.</li>
           </ul>
 
           <p style={hint}>Press Enter to continue</p>

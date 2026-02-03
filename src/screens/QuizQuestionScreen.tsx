@@ -30,7 +30,7 @@ type Props = {
 
 export default function QuizQuestionScreen({ question, onRevealComplete, onNext }: Props) {
   const [phase, setPhase] = useState<Phase>('idle')
-  const [timeLeft, setTimeLeft] = useState(15)
+  const [timeLeft, setTimeLeft] = useState(20)
   const [selected, setSelected] = useState<'A' | 'B' | 'C' | 'D' | null>(null)
 
   const timerRef = useRef<number | null>(null)
@@ -235,7 +235,7 @@ export default function QuizQuestionScreen({ question, onRevealComplete, onNext 
             <button
               onClick={() => {
                 setPhase('options')
-                setTimeLeft(15)
+                setTimeLeft(20)
               }}
             >
               Reveal Options

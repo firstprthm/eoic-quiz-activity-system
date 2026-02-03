@@ -35,9 +35,9 @@ export default function ActivityRules({ onStartActivity }: Props) {
             <div style={{ fontSize: 20, lineHeight: 1.6 }}>
               <h3>General Rules</h3>
               <ul style={{ padding: 0, textAlign: 'left' }}>
+                <li>Every team member is a participant.</li>
                 <li>Team members are first shuffled across different teams.</li>
                 <li>Points are awarded to individuals but contributes to their original team's total.</li>
-                <li>No reminders or clarifications will be provided during the activity.</li>
                 <li>The Activity continues until completion, regardless of eliminations.</li>
               </ul>
 
